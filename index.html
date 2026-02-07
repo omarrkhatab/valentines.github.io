@@ -151,7 +151,7 @@ button{
   <div class="envelope" onclick="showLetter()"><span>Click on it</span></div>
   <img id="letterImg" class="hidden" src="letter.jpg" />
   <div id="letterText" class="letterText hidden">
-    You make every day feel lighter. my baby <3 <br><br>
+    You make every day feel lighter. my baby<3 <br><br>
   </div>
 </div>
 
@@ -209,8 +209,15 @@ function showLetter(){
   document.getElementById('letterImg').classList.remove('hidden');
   document.getElementById('letterText').classList.remove('hidden');
 }
+
+for(let i=0;i<18;i++){
+  const h=document.createElement('div');
+  h.className='heart';
+  h.style.left=Math.random()*100+'vw';
+  h.style.animationDelay=Math.random()*6+'s';
+  document.body.appendChild(h);
+}
 </script>
 
 </body>
 </html>
-
