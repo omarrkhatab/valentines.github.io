@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Valentine</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.page{
+  background:white;
+  padding:40px 30px;
+  border-radius:24px;
+  text-align:center;
+  width:320px;
+  max-width:90vw;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
+  position:relative;
+}
+.hidden{display:none}
+h1{color:#e11d48;margin-bottom:20px}
+.buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+button{
+  padding:12px 22px;
+  border:0;
+  border-radius:999px;
+  font-size:16px;
+  cursor:pointer;
+}
+.yes{background:#ec4899;color:white}
+.no{background:#e5e7eb;color:#111}
+.backwards{
+  position:absolute;
+  top:16px;
+  left:16px;
+  background:#6b7280;
+  color:white;
+}
+.options{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+.option{
+  border:2px solid transparent;
+  border-radius:16px;
+  padding:10px;
+  cursor:pointer;
+  transition:.2s;
+}
+.option img{
+  width:100%;
+  height:110px;
+  object-fit:cover;
+  border-radius:12px;
+}
+.option span{display:block;margin-top:6px;font-weight:600}
+.option.active{border-color:#ec4899}
+.continue{margin-top:18px;background:#ec4899;color:white}
+.heart{
+  position:absolute;
+  color:#ec4899;
+  font-size:18px;
+  animation:float 6s linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(100vh);opacity:0}
+  10%{opacity:1}
+  100%{transform:translateY(-10vh);opacity:0}
+}
+.envelope{
+  width:160px;
+  height:110px;
+  background:#f472b6;
+  margin:0 auto 16px;
+  border-radius:12px;
+  position:relative;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:10px;
+  color:white;
+  font-weight:600;
+}
+.envelope:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;height:55px;
+  background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,.15) 50%);
+  clip-path:polygon(0 0,50% 100%,100% 0);
+}
+.envelope span{
+  position:relative;
+  z-index:2;
+}
+#letterImg{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+.letterText{
+  font-size:18px;
+  line-height:1.6;
+  color:#111;
+}
+</style>
+</head>
+<body>
+
+<div id="p1" class="page">
+  <h1>Will you be my Valentine ?</h1>
+  <div class="buttons">
+    <button class="yes" onclick="go(2)">Yes</button>
+    <button class="no" id="noBtn">No</button>
+  </div>
+</div>
+
+<div id="p2" class="page hidden">
+  <h1>What kind of date ?</h1>
+  <div class="options">
+    <div class="option" onclick="selectType('fancy')">
+      <img src="fancy.jpg">
+      <span>Fancy</span>
+    </div>
+    <div class="option" onclick="selectType('casual')">
+      <img src="casual.jpg">
+      <span>Casual</span>
+    </div>
+  </div>
+  <button class="continue hidden" id="c1" onclick="go(3)">Continue</button>
+</div>
+
+<div id="p3" class="page hidden">
+  <button class="backwards" onclick="goBack()">Backwards</button>
+  <h1>Choose our date</h1>
+  <div id="choices" class="options"></div>
+  <button class="continue hidden" id="c2" onclick="go(4)">Continue</button>
+</div>
+
+<div id="p4" class="page hidden">
+  <div class="envelope" onclick="showLetter()"><span>Click on it</span></div>
+  <img id="letterImg" class="hidden" src="letter.jpg" />
+  <div id="letterText" class="letterText hidden">
+    You make every day feel lighter. my baby <3 <br><br>
+  </div>
+</div>
+
+<script>
+const noBtn = document.getElementById('noBtn');
+noBtn.addEventListener('mouseenter',()=>{
+  const x = Math.random()*200-100;
+  const y = Math.random()*200-100;
+  noBtn.style.transform = `translate(${x}px,${y}px)`;
+});
+
+let type="";
+function go(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('p'+n).classList.remove('hidden');
+}
+
+function goBack(){
+  go(2);
+}
+
+function selectType(t){
+  type=t;
+  document.querySelectorAll('#p2 .option').forEach(o=>o.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('c1').classList.remove('hidden');
+  buildChoices();
+}
+
+function buildChoices(){
+  const box=document.getElementById('choices');
+  box.innerHTML="";
+  let arr=[];
+  if(type==='fancy'){
+    arr=['Sushi','Steak','Pizza','Pasta','Seafood']; // Fine Dining removed
+  }else{
+    arr=['Asian Food & Car Date','Cairo Tower & Bikes','Arcade','Padel Date','Coffee Walk']; // merged first two
+  }
+  arr.forEach(t=>{
+    const d=document.createElement('div');
+    d.className='option';
+    d.innerHTML=`<img src='${t.replace(/ & | /g,'').toLowerCase()}.jpg'><span>${t}</span>`;
+    d.onclick=()=>selectChoice(d);
+    box.appendChild(d);
+  });
+}
+
+function selectChoice(el){
+  document.querySelectorAll('#choices .option').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('c2').classList.remove('hidden');
+}
+
+function showLetter(){
+  document.getElementById('letterImg').classList.remove('hidden');
+  document.getElementById('letterText').classList.remove('hidden');
+}
+
+for(let i=0;i<18;i++){
+  const h=document.createElement('div');
+  h.className='heart';
+  h.style.left=Math.random()*100+'vw';
+  h.style.animationDelay=Math.random()*6+'s';
+  h.innerText='❤';
+  document.body.appendChild(h);
+}
+</script>
+
+</body>
+</html>
